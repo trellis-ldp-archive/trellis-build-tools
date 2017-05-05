@@ -1,0 +1,97 @@
+plugins {
+    id 'net.researchgate.release' version '2.4.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'maven-publish'
+
+group = 'org.trellisldp'
+
+description = 'Trellis LDP Build Tools'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations.all {
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+signing {
+    required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+afterReleaseBuild.dependsOn uploadArchives
+
+uploadArchives {
+    repositories.mavenDeployer {
+        def sonatypeUsername = project.hasProperty('ossrhUsername') ? ossrhUsername : ""
+        def sonatypePassword = project.hasProperty('ossrhPassword') ? ossrhPassword : ""
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        pom.project {
+            packaging 'jar'
+            url 'http://www.trellisldp.org'
+            inceptionYear '2017'
+            name = 'Trellis LDP Build Tools'
+            description = 'Common Build Tools for Trellis LDP projects'
+
+            scm {
+                connection 'scm:git:git://github.com/trellis-ldp/trellis-build-tools.git'
+                developerConnection 'scm:git:git@github.com/trellis-ldp/trellis-build-tools.git'
+                url 'https://github.com/trellis-ldp/trellis-build-tools'
+                tag 'HEAD'
+            }
+
+            licenses {
+                license {
+                    name 'Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0'
+                    comments 'Copyright (c) 2017 Trellis LDP'
+                }
+            }
+
+            organization {
+                name 'Trellis LDP'
+                url 'http://www.trellisldp.org'
+            }
+
+            developers {
+                developer {
+                    id 'acoburn'
+                    name 'Aaron Coburn'
+                    email 'acoburn @ (domain of organization url)'
+                    organization 'Amherst College'
+                    organizationUrl 'https://www.amherst.edu'
+                    roles {
+                        role 'developer'
+                    }
+                    timezone '-5'
+                }
+            }
+        }
+    }
+}
+
