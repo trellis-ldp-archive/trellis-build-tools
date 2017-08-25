@@ -16,7 +16,7 @@ With Gradle, add the following to the `build.gradle` script:
     }
 
     dependencies {
-        buildToolsConfig "org.trellisldp:trellis-build-tools:0.1.0"
+        buildToolsConfig "org.trellisldp:trellis-build-tools:0.2.0"
     }
 
     checkstyle {
@@ -24,6 +24,7 @@ With Gradle, add the following to the `build.gradle` script:
         configProperties.checkstyleConfigDir = resources.text.fromArchiveEntry(configurations.buildToolsConfig, "checkstyle/suppressions.xml").asFile().parent
         showViolations true
         ignoreFailures true
+        toolVersion = '8.1'
     }
 
     license {
