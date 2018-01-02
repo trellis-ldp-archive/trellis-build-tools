@@ -31,6 +31,12 @@ publishing {
     }
 }
 
+jar {
+    from ("$rootDir/LICENSE") {
+        into "META-INF"
+    }
+}
+
 signing {
     required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
@@ -70,7 +76,7 @@ uploadArchives {
                 license {
                     name 'Apache License, Version 2.0'
                     url 'http://www.apache.org/licenses/LICENSE-2.0'
-                    comments 'Copyright (c) 2017 Trellis LDP'
+                    comments 'Copyright (c) 2017-2018 Trellis LDP'
                 }
             }
 
